@@ -55,6 +55,8 @@ func (svc *Auth) SignUp(ctx context.Context, username, password string) (userID 
 	err = svc.db.QueryRowContext(ctx, `
 		insert into users
 			(username, password)
+		values
+			($1, $2)
 		returning id
 	`, username, hashedPass).Scan(&userID)
 	if err != nil {
