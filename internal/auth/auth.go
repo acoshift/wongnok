@@ -10,12 +10,17 @@ import (
 
 // Auth service
 type Auth struct {
-	db *sql.DB
+	db   *sql.DB
+	repo repository
+}
+
+type repository interface {
+	InsertUser(ctx context.Context, db *sql.DB, username, password string) (userID int64, err error)
 }
 
 // New creates new auth service
 func New(db *sql.DB) *Auth {
-	return &Auth{db}
+	return &Auth{db, repo{}}
 }
 
 var reUsername = regexp.MustCompile(`^[a-z0-9]*$`)
@@ -52,13 +57,7 @@ func (svc *Auth) SignUp(ctx context.Context, username, password string) (userID 
 	// hash password
 	hashedPass := hashPassword(password)
 
-	err = svc.db.QueryRowContext(ctx, `
-		insert into users
-			(username, password)
-		values
-			($1, $2)
-		returning id
-	`, username, hashedPass).Scan(&userID)
+	userID, err = svc.repo.InsertUser(ctx, svc.db, username, hashedPass)
 	if err != nil {
 		return 0, err
 	}
