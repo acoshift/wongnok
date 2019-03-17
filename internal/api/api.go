@@ -32,6 +32,10 @@ type AuthService interface {
 func (api API) Handler() http.Handler {
 	router := httprouter.New()
 
+	router.GET("/healthz", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.WriteHeader(http.StatusOK)
+	})
+
 	// auth
 	router.POST("/auth/signup", api.authSignUp)
 	router.POST("/auth/signin", api.authSignIn)

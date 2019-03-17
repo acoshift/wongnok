@@ -5,21 +5,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/acoshift/wongnok/internal/management"
 	_ "github.com/lib/pq"
 
 	"github.com/acoshift/wongnok/internal/api"
 	"github.com/acoshift/wongnok/internal/auth"
+	"github.com/acoshift/wongnok/internal/management"
 )
 
 func main() {
 	fmt.Println("wongnok")
 	fmt.Println("version: 1.0.0")
 
+	dataSource := os.Getenv("DB_URL")
+
 	db, err := sql.Open(
 		"postgres",
-		"postgres://postgres@localhost:5432/wongnok?sslmode=disable",
+		dataSource,
 	)
 	if err != nil {
 		log.Fatal(err)
