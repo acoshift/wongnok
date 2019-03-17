@@ -34,25 +34,25 @@ func (svc *Auth) SignUp(ctx context.Context, username, password string) (userID 
 
 	// validate
 	if username == "" {
-		return 0, fmt.Errorf("username required")
+		return 0, ErrUsernameRequired
 	}
 	if len(username) < 4 {
-		return 0, fmt.Errorf("username too short")
+		return 0, ErrUsernameTooShort
 	}
 	if len(username) > 20 {
-		return 0, fmt.Errorf("username too long")
+		return 0, ErrUsernameTooLong
 	}
 	if !reUsername.MatchString(username) {
-		return 0, fmt.Errorf("invalid format username")
+		return 0, ErrUsernameInvalid
 	}
 	if password == "" {
-		return 0, fmt.Errorf("password required")
+		return 0, newRequiredError("password")
 	}
 	if len(password) < 6 {
-		return 0, fmt.Errorf("password too short")
+		return 0, newValidateError("password", "too short")
 	}
 	if len(password) > 64 {
-		return 0, fmt.Errorf("password too long")
+		return 0, newValidateError("password", "too long")
 	}
 
 	// hash password

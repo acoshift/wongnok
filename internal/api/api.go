@@ -46,3 +46,11 @@ func encodeJSON(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(v)
 }
+
+func handleError(w http.ResponseWriter, statusCode int, err error) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(struct {
+		Error string `json:"error"`
+	}{err.Error()})
+}

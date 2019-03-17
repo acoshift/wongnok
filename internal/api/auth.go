@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/acoshift/wongnok/internal/auth"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -19,6 +20,31 @@ func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	ctx := r.Context()
 	_, err = api.Auth.SignUp(ctx, req.Username, req.Password)
+
+	// case 1: many error values
+	if err == auth.ErrUsernameRequired {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err == auth.ErrUsernameTooShort {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err == auth.ErrUsernameTooLong {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err == auth.ErrUsernameInvalid {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// case 2: group error using type
+	if err, ok := err.(*auth.ValidateError); ok {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
