@@ -17,3 +17,11 @@ func (repo) InsertUser(ctx context.Context, db *sql.DB, username, password strin
 	`, username, password).Scan(&userID)
 	return
 }
+
+func (repo) DeleteToken(ctx context.Context, db *sql.DB, token string) error {
+	_, err := db.ExecContext(ctx, `
+		delete from auth_tokens
+		where id = $1
+	`, token)
+	return err
+}

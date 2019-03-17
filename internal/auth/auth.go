@@ -16,6 +16,7 @@ type Auth struct {
 
 type repository interface {
 	InsertUser(ctx context.Context, db *sql.DB, username, password string) (userID int64, err error)
+	DeleteToken(ctx context.Context, db *sql.DB, token string) error
 }
 
 // New creates new auth service
@@ -124,9 +125,5 @@ func (svc *Auth) SignOut(ctx context.Context, token string) error {
 		return fmt.Errorf("token required")
 	}
 
-	_, err := svc.db.ExecContext(ctx, `
-		delete from auth_tokens
-		where id = $1
-	`, token)
-	return err
+	return svc.repo.DeleteToken(ctx, svc.db, token)
 }
