@@ -1,19 +1,25 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"mime"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-
-	"github.com/acoshift/wongnok/internal/auth"
 )
 
 // API handler
 type API struct {
-	Auth *auth.Auth
+	Auth AuthService
+}
+
+// AuthService type
+type AuthService interface {
+	SignUp(ctx context.Context, username, password string) (userID int64, err error)
+	SignIn(ctx context.Context, username, password string) (token string, err error)
+	SignOut(ctx context.Context, token string) error
 }
 
 // Handler returns api's handler
