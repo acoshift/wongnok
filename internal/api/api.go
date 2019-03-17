@@ -36,6 +36,11 @@ func (api API) Handler() http.Handler {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	router.GET("/sleep", func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+		time.Sleep(10 * time.Second)
+		w.Write([]byte("ok"))
+	})
+
 	// auth
 	router.POST("/auth/signup", api.authSignUp)
 	router.POST("/auth/signin", api.authSignIn)
