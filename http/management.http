@@ -1,0 +1,23 @@
+# Management API
+
+## Create Shop
+
+POST http://localhost:8080/management/shops
+Accept: */*
+Content-Type: application/json; charset=utf-8
+
+{
+    "name": "Moonstore",
+    "description": "หินจากดวงจันทร์ ราคาย่อมเยา",
+    "photos": []
+}
+
+###
+
+## List Shops
+
+GET http://localhost:8080/management/shops
+Accept: */*
+Authorization: 7OJPmLAqocVqBE8k6ud2Zg
+
+###

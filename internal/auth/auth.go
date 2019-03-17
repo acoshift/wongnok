@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/acoshift/wongnok/internal/validate"
 )
 
 // Auth service
@@ -46,13 +48,13 @@ func (svc *Auth) SignUp(ctx context.Context, username, password string) (userID 
 		return 0, ErrUsernameInvalid
 	}
 	if password == "" {
-		return 0, newRequiredError("password")
+		return 0, validate.NewRequiredError("password")
 	}
 	if len(password) < 6 {
-		return 0, newValidateError("password", "too short")
+		return 0, validate.NewError("password", "too short")
 	}
 	if len(password) > 64 {
-		return 0, newValidateError("password", "too long")
+		return 0, validate.NewError("password", "too long")
 	}
 
 	// hash password
@@ -126,4 +128,26 @@ func (svc *Auth) SignOut(ctx context.Context, token string) error {
 	}
 
 	return svc.repo.DeleteToken(ctx, svc.db, token)
+}
+
+// VerifyToken returns user id if token valid
+func (svc *Auth) VerifyToken(ctx context.Context, token string) (userID int64, isAdmin bool, err error) {
+	if token == "" {
+		return 0, false, nil
+	}
+
+	err = svc.db.QueryRowContext(ctx, `
+		select
+			auth_tokens.user_id, users.is_admin
+		from auth_tokens
+		left join users on auth_tokens.user_id = users.id
+		where auth_tokens.id = $1
+	`, token).Scan(&userID, &isAdmin)
+	if err == sql.ErrNoRows {
+		return 0, false, nil
+	}
+	if err != nil {
+		return 0, false, err
+	}
+	return userID, isAdmin, nil
 }

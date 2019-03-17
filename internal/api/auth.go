@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 
 	"github.com/acoshift/wongnok/internal/auth"
+	"github.com/acoshift/wongnok/internal/validate"
 )
 
 func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -15,7 +16,7 @@ func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	err := decodeJSON(r, &req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		handleError(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -45,7 +46,7 @@ func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// case 2: group error using type
-	if err, ok := err.(*auth.ValidateError); ok {
+	if err, ok := err.(*validate.Error); ok {
 		handleError(w, http.StatusBadRequest, err)
 		return
 	}

@@ -3,6 +3,7 @@ module github.com/acoshift/wongnok
 go 1.12
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/lib/pq v1.0.0
 	github.com/stretchr/testify v1.3.0

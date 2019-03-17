@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/acoshift/wongnok/internal/management"
 	_ "github.com/lib/pq"
 
 	"github.com/acoshift/wongnok/internal/api"
@@ -32,7 +33,8 @@ func main() {
 	server := http.Server{
 		Addr: ":8080",
 		Handler: api.API{
-			Auth: auth.New(db),
+			Auth:       auth.New(db),
+			Management: management.New(db),
 		}.Handler(),
 	}
 
