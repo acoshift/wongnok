@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"mime"
 	"net/http"
 
@@ -50,6 +51,10 @@ func encodeJSON(w http.ResponseWriter, v interface{}) {
 func handleError(w http.ResponseWriter, statusCode int, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(statusCode)
+	if statusCode == http.StatusInternalServerError {
+		log.Println(err)
+		err = fmt.Errorf("internal error")
+	}
 	json.NewEncoder(w).Encode(struct {
 		Error string `json:"error"`
 	}{err.Error()})

@@ -3,8 +3,9 @@ package api
 import (
 	"net/http"
 
-	"github.com/acoshift/wongnok/internal/auth"
 	"github.com/julienschmidt/httprouter"
+
+	"github.com/acoshift/wongnok/internal/auth"
 )
 
 func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -38,6 +39,10 @@ func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter
 		handleError(w, http.StatusBadRequest, err)
 		return
 	}
+	if err == auth.ErrUsernameNotAvailable {
+		handleError(w, http.StatusBadRequest, err)
+		return
+	}
 
 	// case 2: group error using type
 	if err, ok := err.(*auth.ValidateError); ok {
@@ -46,7 +51,7 @@ func (api *API) authSignUp(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, http.StatusInternalServerError, err)
 		return
 	}
 

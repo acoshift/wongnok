@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"database/sql"
+
+	"github.com/lib/pq"
 )
 
 type repo struct{}
@@ -15,6 +17,11 @@ func (repo) InsertUser(ctx context.Context, db *sql.DB, username, password strin
 			($1, $2)
 		returning id
 	`, username, password).Scan(&userID)
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code == "23505" && err.Constraint == "users_username_idx" {
+			return 0, ErrUsernameNotAvailable
+		}
+	}
 	return
 }
 
